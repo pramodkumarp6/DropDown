@@ -4,75 +4,48 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.dropdown.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
-    var country = arrayOf("Select Country", "India", "USA", "China", "Japan", "Other")
+     private lateinit var activityMainBinding: ActivityMainBinding
+      var country = arrayOf("Select Country", "India", "USA", "China", "Japan", "Other")
 
-    private var spin: Spinner? = null
-    private   var b: Button? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        activityMainBinding =ActivityMainBinding.inflate(layoutInflater)
+        val view = activityMainBinding.root
+        setContentView(view)
 
-
-        val b = findViewById<Button>(R.id.bottom)
-        b.setOnClickListener {
+        activityMainBinding.bottom.setOnClickListener {
               register()
           }
-       val spin =  findViewById<Spinner>(R.id.countryid);
-
-        spin.onItemSelectedListener = this;
-
-       val  aa = ArrayAdapter(this,R.layout.spinner_item,country)
-           .also {
-            aa ->
-            aa.setDropDownViewResource(R.layout.spinner_dropdown)
+        val aa = ArrayAdapter(this, R.layout.spinner_item, country).also {
+            it.setDropDownViewResource(R.layout.spinner_dropdown)
+            it.notifyDataSetChanged()
         }
-
-        spin.adapter = aa
-
-
+        activityMainBinding.countryid.adapter = aa
+        activityMainBinding.countryid.onItemSelectedListener = this
     }
-
-    fun  register(){
-        var con= spin?.getSelectedItem().toString().trim()
-
-      Log.d(con,"con")
-    }
-
-     fun getString(s: String): String? {
-        return null
-    }
-
-
-
-    fun validateSpinner(spinner: Spinner, error: String?): Boolean {
-        val selectedView = spinner.selectedView
-        if (selectedView != null && selectedView is TextView) {
-            val selectedTextView = selectedView
-            if (selectedTextView.text == "Select Academic Year") {
-                selectedTextView.error = error
-                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
-                return false
-            }
-        }
-        return true
-    }
-
-
-
-
-
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-    //llToast.makeText(this, position, Toast.LENGTH_LONG).show()
+        val country = parent?.getItemAtPosition(position).toString()
     }
-
     override fun onNothingSelected(parent: AdapterView<*>?) {
 
+    }
+    fun  register(){
+        val con = activityMainBinding.countryid.getSelectedItem().toString()
+        Log.d(con,"con")
+
+        if (con.equals("Select Country")) {
+            Toast.makeText(this, "Select Country", Toast.LENGTH_SHORT).show();
+            return;
+        }
     }
 }
 
